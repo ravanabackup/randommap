@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Location Generator</title>
+    <style>
+        /* Dark mode styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        #coordinates, #locationName {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #bbbbbb;
+        }
+        #randomButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #mapLink {
+            color: #4285F4;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        #mapPreview {
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin-top: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+    </style>
+    <!-- Leaflet CSS for OpenStreetMap -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <button id="randomButton">Generate Random Location</button>
+    <div id="coordinates">Coordinates will appear here</div>
+    <div id="locationName">Location: Unknown</div>
+    <a id="mapLink" href="#" target="_blank">Open in Google Maps</a>
+    <div id="mapPreview"></div>
+
+    <!-- Leaflet JS for OpenStreetMap -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let marker;
+
+        function initializeMap(lat, lng) {
+            map = L.map('mapPreview').setView([lat, lng], 5); // Initial zoom level
+            
+            // Dark-themed tile layer
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://carto.com/">CARTO</a> contributors',
+                maxZoom: 19,
+            }).addTo(map);
+
+            marker = L.marker([lat, lng]).addTo(map);
+        }
+
+        function getRandomCoordinate() {
+            const lat = (Math.random() * 180 - 90).toFixed(6); // Latitude between -90 and 90
+            const lng = (Math.random() * 360 - 180).toFixed(6); // Longitude between -180 and 180
+            return { lat, lng };
+        }
+
+        function updateLocationName(lat, lng) {
+            // Placeholder for the location name (since no API is used)
+            const locationPlaceholder = `Random Location near (${lat}, ${lng})`;
+            document.getElementById('locationName').innerText = `Location: ${locationPlaceholder}`;
+        }
+
+        document.getElementById('randomButton').onclick = function() {
+            const { lat, lng } = getRandomCoordinate();
+            const googleMapsLink = `https://www.google.com/maps/@${lat},${lng},15z`; // Google Maps link for opening in new tab
+            document.getElementById('coordinates').innerText = `Latitude: ${lat}, Longitude: ${lng}`;
+            document.getElementById('mapLink').href = googleMapsLink;
+            document.getElementById('mapLink').innerText = "View Random Location on Google Maps";
+
+            // Update map and marker position
+            map.setView([lat, lng], 5);
+            marker.setLatLng([lat, lng]);
+
+            // Update the location name placeholder
+            updateLocationName(lat, lng);
+        };
+
+        // Initialize map on first load with random coordinates
+        const initialCoords = getRandomCoordinate();
+        initializeMap(initialCoords.lat, initialCoords.lng);
+        updateLocationName(initialCoords.lat, initialCoords.lng);
+    </script>
+</body>
+</html>
